@@ -117,9 +117,14 @@ shinyServer(function(input, output) {
   output$varselect <- renderUI({
     if (identical(Dataset(), '') || identical(Dataset(),data.frame())) return(NULL)
     # Variable selection:
-    
-    checkboxGroupInput("Attr", "Choose Attributes (At least 3 attributes must be selected)",
-                       rownames(Dataset()), rownames(Dataset()))
+    selectInput(inputId = 'Attr',
+                label = "Choose Attributes (At least 3 attributes must be selected)",
+                choices = rownames(Dataset()),multiple = TRUE,selectize = TRUE,
+                selected = rownames(Dataset())
+                  
+                )
+   # checkboxGroupInput("Attr", "Choose Attributes (At least 3 attributes must be selected)",
+    #                   rownames(Dataset()), rownames(Dataset()))
     
   })
   
@@ -127,9 +132,14 @@ shinyServer(function(input, output) {
   output$varselect2 <- renderUI({
     if (identical(Dataset(), '') || identical(Dataset(),data.frame())) return(NULL)
     # Variable selection:
-    
-    checkboxGroupInput("rows", "Choose Firms (At least 2 Firms must be selected) - Only for Spider Chart",
-                       colnames(Dataset()), colnames(Dataset()))
+    selectInput("rows",
+                "Choose Firms (At least 2 Firms must be selected) - Only for Spider Chart",
+                colnames(Dataset()),
+                colnames(Dataset()),
+                multiple = TRUE,selectize = TRUE
+                )
+    #checkboxGroupInput("rows", "Choose Firms (At least 2 Firms must be selected) - Only for Spider Chart",
+    #                   colnames(Dataset()), colnames(Dataset()))
     
   })
   
@@ -150,13 +160,19 @@ shinyServer(function(input, output) {
     if (identical(Dataset1(), '') || identical(Dataset1(),data.frame())) return(NULL)
     # Variable selection:
     
-    checkboxGroupInput("users", "Choose Users (At least 1 user must be selected)",
-                       rownames(Dataset1()), head(rownames(Dataset1())))
+    selectInput("users",
+                "Choose Users (At least 1 user must be selected)",
+                rownames(Dataset1()), head(rownames(Dataset1())),
+                multiple = TRUE,
+                selectize = TRUE
+                )
+   # checkboxGroupInput("users", "Choose Users (At least 1 user must be selected)",
+      #                 rownames(Dataset1()), head(rownames(Dataset1())))
     
   })
   
   #++_____________++
-  output$table <- renderTable({
+  output$table <- renderDataTable({
     if (is.null(input$Attr) || length(input$Attr)==0) return(NULL)
     d = Dataset()[input$Attr,]
     d$Attributes = row.names(d)
@@ -165,7 +181,7 @@ shinyServer(function(input, output) {
   })
   
   #++_____________++
-  output$table1 <- renderTable({
+  output$table1 <- renderDataTable({
     if (is.null(input$users) || length(input$users)==0) return(NULL)
     d1 = Dataset1()[input$users,]
     d1$user = row.names(d1)
@@ -210,8 +226,8 @@ shinyServer(function(input, output) {
   # Show table:
   output$plot1 = renderPlot({  
     
-    # if (is.null(input$file))
-    #   return(NULL)
+    if (is.null(input$file))
+      return(NULL)
     # 
     # if (is.null(input$file1))
     #   return(NULL)
